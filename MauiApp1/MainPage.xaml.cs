@@ -60,6 +60,7 @@ public partial class MainPage : ContentPage
                 new SpeechToTextOptions()
                 {
                     // Culture = CultureInfo.GetCultureInfo("PL"),
+                    // Culture = CultureInfo.CurrentCulture,
                     Culture = CultureInfo.GetCultureInfo("pl-PL"),
                     ShouldReportPartialResults = true,
                 },
@@ -69,32 +70,43 @@ public partial class MainPage : ContentPage
         catch (Exception ex)
         {
             SpeechResultLabel.Text = $"Error: {ex.Message}";
+            SemanticScreenReader.Announce(SpeechResultLabel.Text);
         }
     }
 
-        private void HandleRecognitionResultUpdated(
-            object? sender,
-            SpeechToTextRecognitionResultUpdatedEventArgs e
-        )
+    private void HandleRecognitionResultUpdated(
+        object? sender,
+        SpeechToTextRecognitionResultUpdatedEventArgs e
+    )
+    {
+        MainThread.InvokeOnMainThreadAsync(() =>
         {
             SpeechResultLabel.Text += e.RecognitionResult;
-        }
+            SemanticScreenReader.Announce(SpeechResultLabel.Text);
+        });
 
-        private void HandleSpeechToTextStateChanged(
-            object? sender,
-            SpeechToTextStateChangedEventArgs e
-        )
-        {
-            OnPropertyChanged(nameof(State));
-        }
+    }
 
-        private void HandleRecognitionResultCompleted(
-            object? sender,
-            SpeechToTextRecognitionResultCompletedEventArgs e
-        )
+    private void HandleSpeechToTextStateChanged(
+        object? sender,
+        SpeechToTextStateChangedEventArgs e
+    )
+    {
+        OnPropertyChanged(nameof(State));
+    }
+
+    private void HandleRecognitionResultCompleted(
+        object? sender,
+        SpeechToTextRecognitionResultCompletedEventArgs e
+    )
+    {
+        MainThread.InvokeOnMainThreadAsync(() =>
         {
             SpeechResultLabel.Text = e.RecognitionResult.IsSuccessful
                 ? e.RecognitionResult.Text
                 : e.RecognitionResult.Exception.Message;
-        }
+
+            SemanticScreenReader.Announce(SpeechResultLabel.Text);
+        });
+    }
 }

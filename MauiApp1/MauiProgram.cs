@@ -22,6 +22,7 @@ public static class MauiProgram
             });
 
             builder.Services.AddKeyedSingleton<ISpeechToText, SpeechToTextImplementation>("Online");
+            builder.Services.AddKeyedSingleton<ISpeechToText, OfflineSpeechToTextImplementation>("Offline");
 
 #if DEBUG
         builder.Logging.AddDebug();
