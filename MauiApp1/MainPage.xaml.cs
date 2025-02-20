@@ -22,6 +22,15 @@ public partial class MainPage : ContentPage
         _speechToTextService.RecognitionResultCompleted += HandleRecognitionResultCompleted;
     }
 
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+
+        _speechToTextService.StateChanged -= HandleSpeechToTextStateChanged;
+        _speechToTextService.RecognitionResultCompleted -= HandleRecognitionResultCompleted;
+        _speechToTextService.RecognitionResultUpdated -= HandleRecognitionResultUpdated;
+    }
+
     private void OnCounterClicked(object sender, EventArgs e)
     {
         count++;
